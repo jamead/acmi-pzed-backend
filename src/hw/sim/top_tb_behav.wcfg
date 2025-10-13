@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="acmi_package" />
+            <top_module name="axi_vip_pkg" />
+            <top_module name="common" />
+            <top_module name="glbl" />
+            <top_module name="pkg_pl_regs" />
+            <top_module name="std" />
+            <top_module name="top_tb" />
+            <top_module name="xil_common_vip_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="56,696.759197 ns"></ZoomStartTime>
+      <ZoomEndTime time="57,729.192781 ns"></ZoomEndTime>
+      <Cursor1Time time="57,015.000000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="199"></NameColumnWidth>
+      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="20" />
+   <wvobject type="logic" fp_name="/top_tb/dut/gth_fe_refclk_p">
+      <obj_property name="ElementShortName">gth_fe_refclk_p</obj_property>
+      <obj_property name="ObjectShortName">gth_fe_refclk_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/tb_ACLK">
+      <obj_property name="ElementShortName">tb_ACLK</obj_property>
+      <obj_property name="ObjectShortName">tb_ACLK</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/tb_ARESETn">
+      <obj_property name="ElementShortName">tb_ARESETn</obj_property>
+      <obj_property name="ObjectShortName">tb_ARESETn</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/temp_clk">
+      <obj_property name="ElementShortName">temp_clk</obj_property>
+      <obj_property name="ObjectShortName">temp_clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/temp_rstn">
+      <obj_property name="ElementShortName">temp_rstn</obj_property>
+      <obj_property name="ObjectShortName">temp_rstn</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/read_data">
+      <obj_property name="ElementShortName">read_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">read_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/leds">
+      <obj_property name="ElementShortName">leds[7:0]</obj_property>
+      <obj_property name="ObjectShortName">leds[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/resp">
+      <obj_property name="ElementShortName">resp</obj_property>
+      <obj_property name="ObjectShortName">resp</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/gth_fe_refclk_p">
+      <obj_property name="ElementShortName">gth_fe_refclk_p</obj_property>
+      <obj_property name="ObjectShortName">gth_fe_refclk_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/gth_fe_refclk_n">
+      <obj_property name="ElementShortName">gth_fe_refclk_n</obj_property>
+      <obj_property name="ObjectShortName">gth_fe_refclk_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/ps_pl/reg_o_chaina">
+      <obj_property name="ElementShortName">reg_o_chaina</obj_property>
+      <obj_property name="ObjectShortName">reg_o_chaina</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/chaina_io/to_artix/we_sync1">
+      <obj_property name="ElementShortName">we_sync1</obj_property>
+      <obj_property name="ObjectShortName">we_sync1</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/chaina_io/to_artix/we_sync2">
+      <obj_property name="ElementShortName">we_sync2</obj_property>
+      <obj_property name="ObjectShortName">we_sync2</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/chaina_io/to_artix/we_sync3">
+      <obj_property name="ElementShortName">we_sync3</obj_property>
+      <obj_property name="ObjectShortName">we_sync3</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/chaina_io/to_artix/addr">
+      <obj_property name="ElementShortName">addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/chaina_io/to_artix/data">
+      <obj_property name="ElementShortName">data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/chaina_io/to_artix/we">
+      <obj_property name="ElementShortName">we</obj_property>
+      <obj_property name="ObjectShortName">we</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/chaina_io/to_artix/gth_tx_data">
+      <obj_property name="ElementShortName">gth_tx_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">gth_tx_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/chaina_io/to_artix/gth_tx_data_enb">
+      <obj_property name="ElementShortName">gth_tx_data_enb</obj_property>
+      <obj_property name="ObjectShortName">gth_tx_data_enb</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/chaina_io/to_artix/state">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+</wave_config>

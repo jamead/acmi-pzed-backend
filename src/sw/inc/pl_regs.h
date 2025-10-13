@@ -1,0 +1,42 @@
+
+
+//PL AXI4 Bus Registers
+#define MOD_ID_NUM 0x0
+#define MOD_ID_VER 0x4
+#define PROJ_ID_NUM 0x10
+#define PROJ_ID_VER 0x14
+#define GIT_SHASUM 0x18
+#define COMPILE_TIMESTAMP 0x1C
+
+#define ARTIX_SPI_DATA 0x20
+#define ARTIX_SPI_ADDR 0x24
+#define ARTIX_SPI_WE   0x28
+
+#define EVR_RST_REG 0x30
+
+#define FP_LEDS_REG 0x40
+
+#define EVR_TS_NS_REG 0x50
+#define EVR_TS_S_REG 0x54
+#define EVR_TS_NS_LAT_REG 0x58
+#define EVR_TS_S_LAT_REG 0x5C
+#define EVR_FE_TRIGNUM_REG 0x60
+#define EVR_FE_TRIGDLY_REG 0x64
+#define EVENT_SRC_SEL_REG 0x68
+
+#define CHAINA_FIFO_STREAMENB_REG 0x100
+#define CHAINA_FIFO_RST_REG 0x104
+#define CHAINA_FIFO_DATA_REG 0x108
+#define CHAINA_FIFO_CNT_REG 0x10C
+
+
+
+
+
+
+
+
+
+
+
+

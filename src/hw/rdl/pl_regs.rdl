@@ -1,0 +1,216 @@
+`include "pl_regs.vh" //automatically created and added by fwk with conf variables such a C_VERSION ...
+
+/* default values of defined variables */
+`ifndef C_ID
+`define C_ID 0xE1C00100
+`endif
+`ifndef C_VERSION
+`define C_VERSION 0x00000000
+`endif
+`ifndef C_PRJ_ID
+`define C_PRJ_ID 0xE1C00010
+`endif
+`ifndef C_PRJ_VERSION
+`define C_PRJ_VERSION 0x00000000
+`endif
+`ifndef C_PRJ_TIMESTAMP
+`define C_PRJ_TIMESTAMP 0x00000000
+`endif
+`ifndef C_PRJ_SHASUM
+`define C_PRJ_SHASUM 0x00000000
+`endif
+
+/*
+  module a address space
+*/
+addrmap pl_regs {
+  name = "Example module for the example application";
+  desyrdl_interface = "AXI4L";
+
+  reg {
+    desc = "Module Identification Number";
+    default sw = r;
+    default hw = r;
+    field {} data[32] = `C_ID;
+  } ID @0x00;
+
+  reg {
+    desc = "Module Version Number";
+    default sw = r;
+    default hw = r;
+    field {} changes [8] =  `C_VERSION & 0x000000FF;
+    field {} patch [8]   = (`C_VERSION & 0x0000FF00) >> 8;
+    field {} minor [8]   = (`C_VERSION & 0x00FF0000) >> 16;
+    field {} major [8]   = (`C_VERSION & 0xFF000000) >> 24;
+  } VERSION @0x04;
+
+  reg {
+    desc="Project Identification Number";
+    default sw = r;
+    default hw = r;
+    field {} data[32] = `C_PRJ_ID;
+  } PRJ_ID @0x10;
+
+  reg {
+    desc="Project Version Number";
+    default sw = r;
+    default hw = r;
+    field {} changes [8] =  `C_PRJ_VERSION & 0x000000FF;
+    field {} patch [8]   = (`C_PRJ_VERSION & 0x0000FF00) >> 8;
+    field {} minor [8]   = (`C_PRJ_VERSION & 0x00FF0000) >> 16;
+    field {} major [8]   = (`C_PRJ_VERSION & 0xFF000000) >> 24;
+  } PRJ_VERSION @0x14;
+
+  reg {
+    desc="Project Repository check sum.";
+    default sw = r;
+    default hw = r;
+      field {} data[32] = `C_PRJ_SHASUM;
+  } PRJ_SHASUM @0x18;
+
+  reg {
+    desc="Project compilation timestamp";
+    default sw = r;
+    default hw = r;
+    field {} data[32] = `C_PRJ_TIMESTAMP;
+  } PRJ_TIMESTAMP @0x1C;
+
+ 
+ 
+reg {
+    desc="Artix SPI data";
+    default sw = rw;
+    default hw = r;
+    field {} data[32] = 0;
+  } artix_spi_data @0x20;
+  
+reg {
+    desc="Artix SPI address";
+    default sw = rw;
+    default hw = r;    
+    field {} data[32] = 0;
+  } artix_spi_addr @0x24; 
+  
+ reg {
+    desc="Artix SPI we";
+    default sw = rw;
+    default hw = r;    
+    field {} data[1] = 0;
+  } artix_spi_we @0x28; 
+   
+ 
+ 
+
+ 
+reg {
+    desc="EVR Reset";
+    default sw = rw;
+    default hw = r;
+    field {} data[1] = 0;
+  } evr_reset @0x30;
+  
+ 
+ 
+ reg {
+    desc="FP LED outputs";
+    default sw = rw;
+    default hw = r;
+    field {} val[8];
+  } FP_LEDS @0x40;
+
+
+
+
+/* EVR Registers */
+ reg {
+    desc="Timestamp (ns)";
+    default sw = r;
+    default hw = w;
+    field {} val[32];
+  } ts_ns @0x50;
+
+reg {
+    desc="Timestamp (s)";
+    default sw = r;
+    default hw = w;
+    field {} val[32];
+  } ts_s @0x54;
+  
+reg {
+    desc="Latched Trigger Timestamp (ns)";
+    default sw = r;
+    default hw = w;
+    field {} val[32];
+  } lat_ts_ns @0x58;
+
+reg {
+    desc="Latched Trigger Timestamp (s)";
+    default sw = r;
+    default hw = w;
+    field {} val[32];
+  } lat_ts_s @0x5C;  
+
+reg {
+    desc="Front End (Artix) Trigger Event Number";
+    default sw = rw;
+    default hw = r;
+    field {} val[8];
+  } fe_trig_eventno @0x60;  
+
+reg {
+    desc="Front End (Artix) Trigger Delay";
+    default sw = rw;
+    default hw = r;
+    field {} val[32];
+  } fe_trig_delay @0x64;  
+
+ reg {
+    desc="Internal clock mode (tbt,fa,sa trig source) (0=int counters, 1=evr)";
+    default sw = rw;
+    default hw = r;
+    field {} val[1];
+  } event_src_sel @0x68;  
+ 
+ 
+ 
+ 
+/* ChainA FIFO Readout Registers */
+reg {
+    desc="ChainA FIFO Readout Enable";
+    default sw = rw;
+    default hw = r;
+    default swmod=true; 
+    field {} data[1];
+  } chainA_fifo_streamenb @0x100;
+     
+reg {
+    desc="ChainA FIFO Reset";
+    default sw = rw;
+    default hw = r;
+    field {} data[1];
+  } chainA_fifo_reset @0x104;
+   
+reg {
+    desc="ChainA FIFO Data Out";
+    default sw = r;
+    default hw = w;
+    default swacc=true;   
+    field {} data[32];
+  } chainA_fifo_data @0x108;
+   
+reg {
+    desc="ChainA FIFO Word Count";
+    default sw = r;
+    default hw = w;
+    field {} data[16];
+  } chainA_fifo_rdcnt @0x10C;
+   
+
+
+
+
+
+
+
+
+};

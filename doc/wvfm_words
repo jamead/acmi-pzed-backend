@@ -1,0 +1,101 @@
+Results             PSC Offset
+header		        0          0x0000beef
+fpga_version	        4
+Beam baseline           8
+Beam peak	       12
+Beam integral          16
+Beam fwhm              20
+Beam peak index        24
+2 TP1 baseline         28
+3 TP1 peak	       32
+4 TP1 integral         36
+5 TP1 fwhm             40
+6 TP1 peak index       44
+7 TP2 baseline         48
+8 TP2 peak	       52
+9 TP2 integral         56
+10 TP2 fwhm            60
+TP2 peak index         64
+TP3 baseline           68
+TP3 peak	       72
+TP3 integral           76
+TP3 fwhm               80
+TP3 peak index         84
+BeamOOW baseline       88
+BeamOOW peak	       92
+BeamOOW integral       96
+BeamOOW fwhm           100
+BeamOOW peak index     104
+Faults Live            108
+Faults Latched         112
+Timestamp              116
+Accumulator            120
+ACIS readbacks         124
+EEPROM CRC Calc	       128
+faults readback TP     132
+StartUp Count          136
+Beam Accum Limit Calc  140
+
+EVR Timestamp (s)      148    (Added into waveform in backend)
+EVR Timestamp (ns)     152    (Added into waveform in backend)
+
+
+EEPROM Settings     PSC Offset   EEPROM address
+header                 256       0                           
+tp1_pulse_delay        260       4                  
+tp1_pulse_width        264       8
+tp1_adc_delay          268       12
+tp2_pulse_delay        272       16                  
+tp2_pulse_width        276       20
+tp2_adc_delay          280       24
+tp3_pulse_delay        284       28
+tp3_pulse_width        288       32
+tp3_adc_delay          292       36
+beam_adc_delay         296       40
+beam_oow_threshold     300       44
+tp1_int_low_limit      304       48
+tp1_int_high_limit     308       52
+tp2_int_low_limit      312       56
+tp2_int_high_limit     316       60
+tp3_int_low_limit      320       64                
+tp3_int_high_limit     324       68
+tp1_peak_low_limit     328       72
+tp1_peak_high_limit    332       76
+tp2_peak_low_limit     336       80
+tp2_peak_high_limit    340       84              
+tp3_peak_low_limit     344       88
+tp3_peak_high_limit    348       92
+tp1_fwhm_low_limit     352       96
+tp1_fwhm_high_limit    356      100
+tp2_fwhm_low_limit     360      104               
+tp2_fwhm_high_limit    364      108
+tp3_fwhm_low_limit     368      112
+tp3_fwhm_high_limit    372      116
+tp1_base_low_limit     376      120
+tp1_base_high_limit    380      124
+tp2_base_low_limit     384      128
+tp2_base_high_limit    388      132
+tp3_base_low_limit     392      136
+tp3_base_high_limit    396      140
+tp1_neg_level          400      144
+tp2_neg_level          404      148
+tp3_neg_level          408      152
+tp1_pos_level          412      156
+tp2_pos_level          416      160
+tp3_pos_level          420      164
+beamaccum_limit_hr     424      168
+beamhigh_limit         428      172
+baseline_low_limit     432      176
+baseline_high_limit    436      180
+charge_calibration     440      184
+accum_q_min            444      188
+accum_length           448      192
+crc32_eeprom           452      196
+
+
+Beam OOW Data          512     (128 4-byte Words)
+
+ADC Waveform           1024    (16000 4-byte words)
+
+          
+

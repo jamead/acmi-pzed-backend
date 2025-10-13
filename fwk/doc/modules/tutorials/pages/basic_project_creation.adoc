@@ -1,0 +1,172 @@
+= Basic Tutorial
+:navtitle: Basic Tutorial
+
+This basic tutorial covers the general process to create a FPGA Firmware project on Vivado by using the FWK. The FWK comes with several helper shell scripts to help users on create a basic project structure, along with creating a simple module. +
+
+== Creating Project Structure
+
+Start by creating a folder called `demo`. First thing to do is to add the FWK . After FWK gets added, recursively update the git submodule to fetch the other dependencies (eg. DesyRDL)
+[source,shell]
+----
+mkdir demo
+cd demo
+git clone https://gitlab.desy.de/fpgafw/fwk.git
+----
+
+FWK comes with helper shell scripts to let users create a basic folder structure and prepared common files for a FPGA project. +
+Open the terminal and run the command from the project folder (`./demo/`). +
+[source,shell]
+----
+./fwk/scr/init_fwfwk_prj.sh demo
+----
+
+This shell scripts created several folders namely `cfg`, `doc`, `out`, `prj`, `src` and lastly `tcl`. Next chapter explain each of these folders. It also creates `Makefile` which just points to the start point for FWK commands.
+
+=== Project Folder Structure
+
+. `cfg` : Configuration folder where all project configuration files will be stored
+. `doc` : Documentation folder where all documentation of this project will be stored
+. `out` : Output folder where the build process artifacts will be stored
+. `src` : Source folder where all IPs/Modules will be stored
+. `tcl` : tcl scripts folder where all tcl scripts that initiate the project creation/implementation will be stored
+
+The `cfg` folder contains `default.cfg` file. This file tells FWK how to create and configure the whole project. +
+
+The helper scripts already filled this file with bunch of parameters which is necessary for FWK to start.
+
+Inspecting the `default.cfg` reveals following parameters are already present:
+
+[source,Makefile,title=./src/default.cfg]
+----
+# project default configuration
+ProjectName=demo
+ProjectConf=default
+ProjectTcl=tcl/project.tcl
+ToolType=
+----
+
+Each project needs to have a name (dictated by `ProjectName` variable) and a project configuration (dictated by `ProjectConf`). This is a must for FWK. +
+
+It also points to the initial tcl script which will kick start everything with `ProjectTcl`. This is currently pointing to a tcl file which is already present at `./tcl/project.tcl`.
+
+`ToolType` parameters tells FWK which tool backend to use. In this example, `Vivado` will be used hence edit the following line: `ToolType=vivado`
+
+== Create a Vivado Project
+
+Everything necessary to create a Vivado project is now there.
+
+TIP: At this point, Xilinx tools must be visible to the command line.
+
+[source,shell]
+----
+source <Xilinx_Installation_Path>/Vivado/<vivado_version>/settings64.sh
+----
+
+[source,shell]
+----
+make cfg=default project
+----
+
+FWK now created an empty Vivado project named `demo_default` under `./prj` folder.
+
+Users can now open the Vivado GUI using FWK command with
+
+[source,shell]
+----
+make cfg=default gui
+----
+
+Of course, this Vivado project is empty and useless since there are no files/modules/IPs that is introduced to FWK. So let's close the Vivado and add something interesting to the project.
+
+== Creating a simple module
+
+Now that there is a basic structure for the project, next step is to create a simple module called `app_demo`. Again, just like in previous step, helper shell scripts from FWK will be used:
+
+[source,shell]
+----
+./fwk/scr/init_demo_module.sh ./src/app_demo
+----
+
+This script takes one argument to point the location of the module that will be created
+
+TIP: It is recommended to keep all modules under the `./src` folder in order to manage file dependencies between libraries and modules manageable.
+
+The `init_module.sh` created the basic folder structure inside `./demo/src/app_demo/`. Note that this folder structure is common for all DESY modules. However FWK is flexible enough to handle different folder structures if necessary.
+
+. `doc` : Documentation folder where all documentation of this module will be stored here
+. `hdl` : All hardware definition language files (.vhd, .v, .sv etc.) stored here
+. `sim` : All simulation related files (.py, .vhd, .m etc.) goes here
+. `tcl` : tcl scripts to introduce this module to FWK goes here
+
+Inside the `hdl` folder of the app_demo module, there is already a VHDL file called `app_demo.vhd`. This is a simple 32 bit counter.
+
+There is also `main.tcl` inside `./tcl` folder of app_demo module. Next chapter inspect this tcl file since this is a crucial point in FWK build flow.
+
+=== Inspecting the app_demo main.tcl
+
+The helper script created `./src/app_demo/tcl/main.tcl`. Let's see what's inside.
+
+[source,tcl,title=./src/app_demo/tcl/main.tcl]
+----
+################################################################################
+# Main tcl for the Demo module
+################################################################################
+
+# ==============================================================================
+proc init {} {
+}
+
+# ==============================================================================
+proc setSources {} {
+  variable Sources
+  lappend Sources {"../hdl/app_demo_top.vhd" "VHDL 2008"}
+}
+
+# ==============================================================================
+proc setAddressSpace {} {
+}
+
+# ==============================================================================
+proc doOnCreate {} {
+  addSources "Sources"
+}
+
+# ==============================================================================
+proc doOnBuild {} {
+}
+
+# ==============================================================================
+proc setSim {} {
+}
+----
+
+There are bunch of pre-defined tcl procedures. These are explained in the FWK documentation. For this demo, only `setSources` and `doOnCreate` is used. On `setSources` procedure, FWK provides a `Sources` variable to be filled by modules. Here `app_demo` module adds the file path for `app_demo_top.vhd` file and sets the VHDL type to `VHDL 2008`. +
+
+On `doOnCreate` module tells the FWK to simply add the `Sources` to the FPGA project.
+
+== Editing Project TCL file
+
+There is one last step needed to make sure this new `app_demo` module gets introduced to the FWK build flow. The `./tcl/project.tcl` needs to reflect where this new `app_demo/tcl/main.tcl` script is located
+
+* open tcl/project.tcl
+* edit the `init{}` procedure as follows
+
+[source,tcl,title=./tcl/project.tcl]
+----
+proc init {} {
+  addSrcModule app ${::fwfwk::ProjectPath}/src/app_demo/tcl/main.tcl
+}
+----
+
+`${::fwfwk::ProjectPath}` is already a global variable known by FWK which points to the root directory of the `demo` project folder.
+
+== Viewing the final Vivado Project
+
+Now that the `app_demo` project is introduced to the build environment, FWK needs to create the project again.
+
+[source,shell]
+----
+make cfg=default project gui
+----
+
+In the next chapters, more advanced usage of modules will be demonstrated. (eg. Adding Registers and providing address space definitions)
