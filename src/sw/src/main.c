@@ -166,16 +166,20 @@ int main(void) {
 
 	init_i2c();
 	xil_printf("i2c init done...\r\n");
-	prog_si570();
+	usleep(1000);
+	//prog_si570();
 
-	usleep(100);
+	//while (1) {
+	   write_lmk61e2();
+	   sleep(1);
+	//}
 
 
 	//EVR reset
-    //xil_printf("Resetting EVR GTX...\r\n");
-	//Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_RESET_REG, 0xFF);
-	//usleep(100);
-	//Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_RESET_REG, 0);
+    xil_printf("Resetting EVR GTX...\r\n");
+	Xil_Out32(XPAR_M_AXI_BASEADDR + 0x30, 0xFF);
+	usleep(100);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + 0x30, 0);
 
 
     sys_thread_new("main", realmain, NULL, THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);

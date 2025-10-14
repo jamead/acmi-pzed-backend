@@ -20,6 +20,14 @@ extern float CONVDACBITSTOVOLTS;
 
 
 
+// Registers to program LMK61E2 to 312.3MHz
+static const u32 lmk61e2_values [] = {
+		0x0010, 0x010B, 0x0233, 0x08B0, 0x0901, 0x1000, 0x1180, 0x1502,
+		0x1600, 0x170F, 0x1900, 0x1A2E, 0x1B00, 0x1C00, 0x1DA9, 0x1E00,
+		0x1F00, 0x20C8, 0x2103, 0x2224, 0x2327, 0x2422, 0x2502, 0x2600,
+		0x2707, 0x2F00, 0x3000, 0x3110, 0x3200, 0x3300, 0x3400, 0x3500,
+		0x3800, 0x4802,
+};
 
 
 // Registers to program si570 to 312.3MHz.
@@ -116,6 +124,25 @@ s32 i2c1_read(u8 *buf, u8 len, u8 addr) {
     status = XIicPs_MasterRecvPolled(&IicPsInstance1, buf, len, addr);
     return status;
 }
+
+
+void write_lmk61e2()
+{
+   u8 buf[4] = {0};
+   u32 regval, i;
+
+   u32 num_values = sizeof(lmk61e2_values) / sizeof(lmk61e2_values[0]);  // Get the number of elements in the array
+   for (i=0; i<num_values; i++) {
+	  regval = lmk61e2_values[i];
+      buf[0] = (char) ((regval & 0x00FF00) >> 8);
+      buf[1] = (char) (regval & 0xFF);
+      //xil_printf("Writing I2c\r\n");
+      i2c0_write(buf,2,0x5A);
+      xil_printf("LMK61e2 Write = 0x%x\t    B0 = %x    B1 = %x\r\n",regval, buf[0], buf[1]);
+   }
+}
+
+
 
 
 

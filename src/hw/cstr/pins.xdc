@@ -105,15 +105,15 @@ set_property SLEW FAST [get_ports artix_spi_cs]
 
 
 # voltage, current and temp i2c
-set_property PACKAGE_PIN A7 [get_ports {ivt_i2c_sda}]
-set_property IOSTANDARD LVCMOS18 [get_ports {ivt_i2c_sda}]
-set_property DRIVE 12 [get_ports {ivt_i2c_sda}]
-set_property SLEW SLOW [get_ports {ivt_i2c_sda}]
+set_property PACKAGE_PIN A7 [get_ports ivt_i2c_sda]
+set_property IOSTANDARD LVCMOS18 [get_ports ivt_i2c_sda]
+set_property DRIVE 12 [get_ports ivt_i2c_sda]
+set_property SLEW SLOW [get_ports ivt_i2c_sda]
 
-set_property PACKAGE_PIN A6 [get_ports {ivt_i2c_scl}]
-set_property IOSTANDARD LVCMOS18 [get_ports {ivt_i2c_scl}]
-set_property DRIVE 12 [get_ports {ivt_i2c_scl}]
-set_property SLEW SLOW [get_ports {ivt_i2c_scl}]
+set_property PACKAGE_PIN A6 [get_ports ivt_i2c_scl]
+set_property IOSTANDARD LVCMOS18 [get_ports ivt_i2c_scl]
+set_property DRIVE 12 [get_ports ivt_i2c_scl]
+set_property SLEW SLOW [get_ports ivt_i2c_scl]
 
 
 
@@ -194,6 +194,7 @@ set_property IOSTANDARD LVDS [get_ports waveform_sel_n]
 set_property PACKAGE_PIN L5 [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_n]
+
 
 
 

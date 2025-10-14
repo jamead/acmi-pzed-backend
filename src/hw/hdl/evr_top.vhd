@@ -89,7 +89,7 @@ architecture behv of evr_top is
 --   attribute mark_debug of inj_trig: signal is "true";
 --   attribute mark_debug of inj_trig_sync: signal is "true";
    
---   attribute mark_debug of timestamp: signal is "true";
+   attribute mark_debug of timestamp: signal is "true";
 ----   attribute mark_debug of eventclock: signal is "true";
 ----   attribute mark_debug of prev_datastream: signal is "true";
 
