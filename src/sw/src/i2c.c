@@ -67,23 +67,9 @@ void init_i2c() {
     	//return XST_FAILURE;
     }
 
-/*
-    // Look up the configuration in the config table
-    ConfigPtr = XIicPs_LookupConfig(1);
-    if(ConfigPtr == NULL) {
-    	xil_printf("I2C Bus 1 Lookup failed!\r\n");
-    	//return XST_FAILURE;
-    }
-
-    Status = XIicPs_CfgInitialize(&IicPsInstance1, ConfigPtr, ConfigPtr->BaseAddress);
-     if(Status != XST_SUCCESS) {
-     	xil_printf("I2C Bus 1 initialization failed!\r\n");
-     	//return XST_FAILURE;
-     }
-*/
     //set i2c clock rate to 100KHz
     XIicPs_SetSClk(&IicPsInstance0, 100000);
-    //XIicPs_SetSClk(&IicPsInstance1, 100000);
+
 }
 
 
@@ -106,24 +92,6 @@ s32 i2c0_read(u8 *buf, u8 len, u8 addr) {
     return status;
 }
 
-
-s32 i2c1_write(u8 *buf, u8 len, u8 addr) {
-
-	s32 status;
-
-	while (XIicPs_BusIsBusy(&IicPsInstance1));
-	status = XIicPs_MasterSendPolled(&IicPsInstance1, buf, len, addr);
-	return status;
-}
-
-s32 i2c1_read(u8 *buf, u8 len, u8 addr) {
-
-	s32 status;
-
-    while (XIicPs_BusIsBusy(&IicPsInstance1)) {};
-    status = XIicPs_MasterRecvPolled(&IicPsInstance1, buf, len, addr);
-    return status;
-}
 
 
 void write_lmk61e2()
@@ -175,153 +143,6 @@ void prog_si570() {
 	}
 	xil_printf("Si570 Registers after re-programming...\r\n");
     read_si570();
-}
-
-
-
-
-// 24AA025E48 EEPROM  --------------------------------------
-#define IIC_EEPROM_ADDR 0x50
-#define IIC_MAC_REG 0xFA
-
-
-void i2c_get_mac_address(u8 *mac){
-	//i2c_set_port_expander(I2C_PORTEXP1_ADDR,0x80);
-    u8 buf[6] = {0};
-    buf[0] = IIC_MAC_REG;
-    i2c1_write(buf,1,IIC_EEPROM_ADDR);
-    i2c1_read(mac,6,IIC_EEPROM_ADDR);
-    xil_printf("EEPROM MAC ADDR = %2x %2x %2x %2x %2x %2x\r\n",mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    //iic_chp_recv_repeated_start(buf, 1, mac, 6, IIC_EEPROM_ADDR);
-}
-
-
-
-
-void i2c_eeprom_writeBytes(u8 startAddr, u8 *data, u8 len){
-	//i2c_set_port_expander(I2C_PORTEXP1_ADDR,0x80);
-    u8 buf[len + 1];
-    buf[0] = startAddr;
-    for(int i = 0; i < len; i++) buf[i+1] = data[i];
-    i2c1_write(buf, len + 1, IIC_EEPROM_ADDR);
-}
-
-
-void i2c_eeprom_readBytes(u8 startAddr, u8 *data, u8 len){
-	u8 buf[] = {startAddr};
-	//i2c_set_port_expander(I2C_PORTEXP1_ADDR,0x80);
-    i2c1_write(buf,1,IIC_EEPROM_ADDR);
-    i2c1_read(data,len,IIC_EEPROM_ADDR);
-    //u8 buf[] = {startAddr};
-    //iic_chp_recv_repeated_start(buf, 1, data, len, IIC_EEPROM_ADDR);
-    //iic_pe_disable(2, 0);
-}
-
-
-
-void eeprom_dump()
-{
-  u8 rdBuf[129];
-  memset(rdBuf, 0xFF, sizeof(rdBuf));
-  rdBuf[128] = 0;
-  i2c_eeprom_readBytes(0, rdBuf, 128);
-
-  printf("Read EEPROM:\r\n\r\n");
-  printf("%s\r\n", rdBuf);
-
-  for (int i = 0; i < 128; i++)
-  {
-    if ((i % 16) == 0)
-      printf("\r\n0x%02x:  ", i);
-    printf("%02x  ", rdBuf[i]);
-  }
-  printf("\r\n");
-}
-
-
-
-
-void ReadHardwareFlavor(void)  {
-
-
-    u8 rdBuf[8];
-    u8 val;
-
-    i2c_eeprom_readBytes(0x10, rdBuf, 8);
-    xil_printf("\r\nReading PSC Settings from EEPROM...\r\n");
-    // 2 or 4 channel
-    val = rdBuf[0];
-    if (val == 0) {
- 		printf("This is a 2 channel PSC\r\n");
- 		Xil_Out32(XPAR_M_AXI_BASEADDR + NUMCHANS_REG, 0);
-    }
-	else if (val == 1) {
- 		printf("This is a 4 channel PSC\r\n");
- 		Xil_Out32(XPAR_M_AXI_BASEADDR + NUMCHANS_REG, 1);
-	}
-	else {
-		Xil_Out32(XPAR_M_AXI_BASEADDR + NUMCHANS_REG, 2);
-	    xil_printf("Invalid Number of Channel Setting...\r\n");
-	}
-
-    // Resolution
-	val = rdBuf[1];
-    //Write FPGA register 0=MS, 1=HS
-	Xil_Out32(XPAR_M_AXI_BASEADDR + RESOLUTION_REG, val);
-	if (val == 0) {
-		xil_printf("This is an Medium Resolution (18bit) PSC\r\n");
-        CONVVOLTSTODACBITS = CONVVOLTSTO18BITS;
-        CONVDACBITSTOVOLTS = CONV18BITSTOVOLTS;
-	}
-    else if (val == 1) {
-		xil_printf("This is a High Resolution (20bit) PSC\r\n");
-	    CONVVOLTSTODACBITS = CONVVOLTSTO20BITS;
-	    CONVDACBITSTOVOLTS = CONV20BITSTOVOLTS;
-	}
-    else {
-		Xil_Out32(XPAR_M_AXI_BASEADDR + RESOLUTION_REG, 2);
-    	xil_printf("Invalid Resolution Setting...\r\n");
-    }
-
-
-	// Bandwidth
-    val = rdBuf[2];
-	if (val == 0) {
- 		Xil_Out32(XPAR_M_AXI_BASEADDR + BANDWIDTH_REG, 0);
-        xil_printf("This is a High Bandwidth (Fast) PSC\r\n");
-	}
-	else if (val == 1) {
-		xil_printf("This is a Low Bandwidth (Slow) PSC\r\n");
-		Xil_Out32(XPAR_M_AXI_BASEADDR + BANDWIDTH_REG, 1);
-    }
-	else {
-		Xil_Out32(XPAR_M_AXI_BASEADDR + BANDWIDTH_REG, 2);
-	    xil_printf("Invalid Bandwidth Setting\r\n");
-	}
-
-
-	// Polarity
-    val = rdBuf[3];
-    if (val == 0) {
-  		xil_printf("This is a Bipolar PSC\r\n");
-  	    Xil_Out32(XPAR_M_AXI_BASEADDR + POLARITY_REG, 0);
-    }
-    else if (val == 1) {
-        xil_printf("Unipolar\r\n");
-  	    Xil_Out32(XPAR_M_AXI_BASEADDR + POLARITY_REG, 1);
-  		// Enable pulsing for ON2 if unipolar
-  		Xil_Out32(XPAR_M_AXI_BASEADDR + DIGOUT_ON2_PULSEENB_REG + CHBASEADDR*1, 1);
-  		Xil_Out32(XPAR_M_AXI_BASEADDR + DIGOUT_ON2_PULSEENB_REG + CHBASEADDR*2, 1);
-  		Xil_Out32(XPAR_M_AXI_BASEADDR + DIGOUT_ON2_PULSEENB_REG + CHBASEADDR*3, 1);
-  		Xil_Out32(XPAR_M_AXI_BASEADDR + DIGOUT_ON2_PULSEENB_REG + CHBASEADDR*4, 1);
-    }
-    else {
-        xil_printf("Invalid Polarity Setting\r\n");
-  	    Xil_Out32(XPAR_M_AXI_BASEADDR + POLARITY_REG, 2);
-    }
-
-
-    xil_printf("\r\n\r\n");
 }
 
 

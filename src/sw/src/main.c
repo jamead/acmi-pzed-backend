@@ -18,21 +18,19 @@
 #include "local.h"
 #include "control.h"
 #include "pl_regs.h"
-#include "qspi_flash.h"
 
 #include "xuartps.h"
 
 psc_key* the_server;
 
-struct ScaleFactorType scalefactors[4];
+
 XQspiPs QspiInstance;
 XIicPs IicPsInstance0;	    // si570
-XIicPs IicPsInstance1;      // eeprom, one-wire
+
 
 uint32_t git_hash;
 
-float CONVVOLTSTODACBITS;
-float CONVDACBITSTOVOLTS;
+
 
 
 static void client_event(void *pvt, psc_event evt, psc_client *ckey)
@@ -52,46 +50,35 @@ static void client_event(void *pvt, psc_event evt, psc_client *ckey)
     psc_send_one(ckey, 0x100, sizeof(msg), &msg);
 }
 
+
+
 static void client_msg(void *pvt, psc_client *ckey, uint16_t msgid, uint32_t msglen, void *msg)
 {
     (void)pvt;
 
-	//xil_printf("In Client_Msg:  MsgID=%d   MsgLen=%d\r\n",msgid,msglen);
-
+	xil_printf("In Client_Msg:  MsgID=%d   MsgLen=%d\r\n",msgid,msglen);
 
     //blink front panel LED
-    Xil_Out32(XPAR_M_AXI_BASEADDR + IOC_ACCESS_REG, 1);
-    Xil_Out32(XPAR_M_AXI_BASEADDR + IOC_ACCESS_REG, 0);
+    //Xil_Out32(XPAR_M_AXI_BASEADDR + IOC_ACCESS_REG, 1);
+    //Xil_Out32(XPAR_M_AXI_BASEADDR + IOC_ACCESS_REG, 0);
 
     switch(msgid) {
-        case 0:
-        	glob_settings(msg);
+        case 1: //register settings
+        	reg_settings(msg);
         	break;
-
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-         	chan_settings(msgid,msg,msglen);
-            break;
-        case 101:
-        	write_ramptable(1,msg,msglen);
-            break;
-        case 102:
-        case 103:
-        case 104:
+        case 5: //ping event
             break;
     }
-
-
-
 }
+
+
 
 static void on_startup(void *pvt, psc_key *key)
 {
     (void)pvt;
     (void)key;
     lstats_setup();
+    wvfmdata_setup();
     //sadata_setup();
     //snapshot_setup();
     console_setup();
@@ -136,13 +123,16 @@ void print_firmware_version()
     struct tm *human_time;
     char timebuf[80];
 
-    xil_printf("Module ID Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + ID));
-    xil_printf("Module Version Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + VERSION));
-    xil_printf("Project ID Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + PRJ_ID));
-    xil_printf("Project Version Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + PRJ_VERSION));
+
+
+
+    xil_printf("Module ID Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + MOD_ID_NUM));
+    xil_printf("Module Version Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + MOD_ID_VER));
+    xil_printf("Project ID Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + PROJ_ID_NUM));
+    xil_printf("Project Version Number: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + PROJ_ID_VER));
     //compare to git commit with command: git rev-parse --short HEAD
-    xil_printf("Git Checksum: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + PRJ_SHASUM));
-    epoch_time = Xil_In32(XPAR_M_AXI_BASEADDR + PRJ_TIMESTAMP);
+    xil_printf("Git Checksum: %x\r\n", Xil_In32(XPAR_M_AXI_BASEADDR + GIT_SHASUM));
+    epoch_time = Xil_In32(XPAR_M_AXI_BASEADDR + COMPILE_TIMESTAMP);
     human_time = localtime(&epoch_time);
     strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", human_time);
     xil_printf("Project Compilation Timestamp: %s\r\n", timebuf);

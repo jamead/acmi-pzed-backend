@@ -48,7 +48,7 @@ void eeprom_dump();
 void menu_get_ipaddr();
 void prog_si570();
 void InitSettingsfromQspi();
-void chan_settings(u32, void *, u32);
+void reg_settings(void *);
 float ReadAccumSA(u32, u32);
 void write_ramptable(u32, void *, u32);
 void ReadHardwareFlavor(void);
@@ -95,44 +95,6 @@ uint32_t htonf(float f) {
     pun.f = f;
     return htonl(pun.u);
 }
-
-
-
-#define GAIN20BITFRACT 1048575.0
-#define GAIN16BITFRACT 65535.0
-
-#define CONVVOLTSTO16BITS  3276.8   // 2^16/20.0
-#define CONV16BITSTOVOLTS  (1.0/CONVVOLTSTO16BITS)
-
-#define CONVVOLTSTO18BITS  13107.2  // 2^20/20.0
-#define CONV18BITSTOVOLTS  1/CONVVOLTSTO18BITS
-
-#define CONVVOLTSTO20BITS  52428.8   // 2^20/20.0
-#define CONV20BITSTOVOLTS  1/CONVVOLTSTO20BITS
-
-#define SAMPLERATE 10000.0
-
-#define MS_RES 0  //medium resolution, 18bits
-#define HS_RES 1  //high resolution, 20bits
-
-
-typedef struct ScaleFactorType {
-	float ampspersec;
-	float dac_dccts;
-	float vout;
-	float ignd;
-	float spare;
-	float regulator;
-	float error;
-} ScaleFactorType;
-
-
-
-
-
-
-
-
 
 
 

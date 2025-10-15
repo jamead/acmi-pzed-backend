@@ -23,3 +23,4 @@ set_property LOC GTXE2_CHANNEL_X0Y0 [get_cells evr/evr_gtx_init_i/U0/evr_gtx_i/g
 
 
 
+

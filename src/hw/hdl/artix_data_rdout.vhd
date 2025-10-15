@@ -53,7 +53,7 @@ component wvfm_fifo
     dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
     full : OUT STD_LOGIC;
     empty : OUT STD_LOGIC;
-    rd_data_count : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+    rd_data_count : OUT STD_LOGIC_VECTOR(14 DOWNTO 0)
   );
 end component; 
 
@@ -65,6 +65,7 @@ end component;
   signal fifo_rdstr_fe    : std_logic  := '0';
   signal fifo_din         : std_logic_vector(15 downto 0) := 16d"0";
   signal fifo_wren        : std_logic := '0';  
+  signal fifo_rdcnt       : std_logic_vector(14 downto 0);
 
   
 
@@ -74,12 +75,18 @@ end component;
 
   attribute mark_debug of fifo_wren: signal is "true";
   attribute mark_debug of fifo_din: signal is "true";
+  attribute mark_debug of fifo_rdstr_fe: signal is "true";
+  attribute mark_debug of wvfm_data: signal is "true";
+  attribute mark_debug of wvfm_enb: signal is "true";
+  attribute mark_debug of wvfm_sel: signal is "true";
+  attribute mark_debug of reg_o: signal is "true";
+  attribute mark_debug of reg_i: signal is "true";
 
 
 begin
 
 
-
+reg_i.fifo_rdcnt <= '0' & fifo_rdcnt;
 
 --since fifo is fall-through mode, want the rdstr
 --to happen after the current word is read.
@@ -114,11 +121,11 @@ fifo_inst : wvfm_fifo
     rd_clk => sys_clk,
     din => fifo_din,
     wr_en => fifo_wren,
-    rd_en => fifo_rdstr_fe,
+    rd_en => reg_o.fifo_rdstr, --fifo_rdstr_fe,
     dout => reg_i.fifo_dout,
     full => open,
     empty => open,
-    rd_data_count => reg_i.fifo_rdcnt
+    rd_data_count => fifo_rdcnt
   );
 
 
