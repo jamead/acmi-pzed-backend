@@ -33,12 +33,16 @@ static void wvfmdata_push(void *unused)
 {
     (void)unused;
 
-    u32 wvfm_debug = 1;
+    u32 wvfm_debug = 0;
     u32 wordcnt, pollcnt;
     u32 i;
+    s32 rdbk;
 
 
-    static s32 wvfm[18000];
+    static s32 pulse_stats[64];
+    static s32 eeprom[64];
+    static s16 boow_adc[128];
+    static s16 wvfm_adc[16000];
 
 
 
@@ -47,9 +51,11 @@ static void wvfmdata_push(void *unused)
     while(1) {
 
         vTaskDelay(pdMS_TO_TICKS(1000));
-        xil_printf("Triggering Artix...\r\n");
+        //xil_printf("Triggering Artix...\r\n");
         soft_trig_artix();
 
+
+        vTaskDelay(pdMS_TO_TICKS(50));
         pollcnt = 0;
         do {
         	wordcnt = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_CNT_REG);
@@ -61,6 +67,42 @@ static void wvfmdata_push(void *unused)
         xil_printf("PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
 
         if (wordcnt > 8000) {
+
+          // First 64 words are Pulse Statistics
+          for (i=0;i<64;i++) {
+        	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
+        	  if (wvfm_debug)  xil_printf("%d:  %x\r\n", i,rdbk);
+        	  pulse_stats[i] = htonl(rdbk);
+          }
+
+          // Words 64-127 are EEPROM settings
+          for (i=0;i<64;i++) {
+        	  eeprom[i] = htonl(Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG));
+          }
+
+          // Words 128-191 are Reserved
+          //for (i=0;i<64;i++) {
+        //	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
+          //}
+
+          // Words 192-255 are BOOW adc data
+          for (i=0;i<128;i=i+2) {
+        	  //2 ADC samples are packed in a 32 bit word
+        	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
+        	  boow_adc[i]   = htons((s16) ((rdbk & 0xFFFF0000) >> 16));
+        	  boow_adc[i+1] = htons((s16) (rdbk & 0xFFFF));
+          }
+
+          // Next 16k are the ADC samples after the trigger
+          for (i=0;i<16000;i=i+2) {
+        	  //2 ADC samples are packed in a 32 bit word
+        	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
+        	  wvfm_adc[i]   = htons((s16) ((rdbk & 0xFFFF0000) >> 16));
+        	  wvfm_adc[i+1] = htons((s16) (rdbk & 0xFFFF));
+          }
+
+
+          /*
           for (i=0;i<16258;i++) {
            //read FIFO
         	wvfm[i] = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
@@ -72,23 +114,28 @@ static void wvfmdata_push(void *unused)
         	   wvfm[i] = 0; //ts_ns;
 
           }
+          */
+
         }
+
 
         if (wvfm_debug) xil_printf("Resetting FIFO...\r\n");
         Xil_Out32(XPAR_M_AXI_BASEADDR + FIFO_RST_REG, 1);
-        usleep(1);
+        vTaskDelay(pdMS_TO_TICKS(1));
         Xil_Out32(XPAR_M_AXI_BASEADDR + FIFO_RST_REG, 0);
-        usleep(10);
+        vTaskDelay(pdMS_TO_TICKS(1));
 
         wordcnt = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_CNT_REG);
         if (wvfm_debug) xil_printf("Num FIFO Words: %d\r\n", wordcnt);
 
-        xil_printf("\r\n\r\n");
+        //xil_printf("\r\n\r\n");
 
 
 
-
-        psc_send(the_server, 52, sizeof(wvfm), wvfm);
+        psc_send(the_server, 51, sizeof(pulse_stats), pulse_stats);
+        psc_send(the_server, 52, sizeof(eeprom), eeprom);
+        psc_send(the_server, 53, sizeof(boow_adc), boow_adc);
+        psc_send(the_server, 54, sizeof(wvfm_adc), wvfm_adc);
 
 
     }

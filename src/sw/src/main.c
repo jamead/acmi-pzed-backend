@@ -56,7 +56,7 @@ static void client_msg(void *pvt, psc_client *ckey, uint16_t msgid, uint32_t msg
 {
     (void)pvt;
 
-	xil_printf("In Client_Msg:  MsgID=%d   MsgLen=%d\r\n",msgid,msglen);
+	//xil_printf("In Client_Msg:  MsgID=%d   MsgLen=%d\r\n",msgid,msglen);
 
     //blink front panel LED
     //Xil_Out32(XPAR_M_AXI_BASEADDR + IOC_ACCESS_REG, 1);
@@ -66,6 +66,8 @@ static void client_msg(void *pvt, psc_client *ckey, uint16_t msgid, uint32_t msg
         case 1: //register settings
         	reg_settings(msg);
         	break;
+        case 2: //eeprom settings
+        	eeprom_settings(msg);
         case 5: //ping event
             break;
     }

@@ -49,6 +49,7 @@ void menu_get_ipaddr();
 void prog_si570();
 void InitSettingsfromQspi();
 void reg_settings(void *);
+void eeprom_settngs(void *);
 float ReadAccumSA(u32, u32);
 void write_ramptable(u32, void *, u32);
 void ReadHardwareFlavor(void);
