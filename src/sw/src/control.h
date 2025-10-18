@@ -12,3 +12,4 @@
 #define ACCUM_RESET_MSG 16
 #define EVENT_SRC_SEL_MSG 20  //0=internal, 1=EVR
 #define GTX_RESET_MSG 24  //0=internal, 1=EVR
+#define SOFT_TRIG_MSG 50

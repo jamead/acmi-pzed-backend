@@ -22,7 +22,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-  create_project vivado vivado -part xc7z030sbg485-1
+  create_project acmi_hw acmi_hw -part xc7z030sbg485-1
   set_property target_language VHDL [current_project]
   set_property simulator_language Mixed [current_project]
 }
@@ -65,23 +65,23 @@ set wvfm_fifo [create_ip -name fifo_generator -vendor xilinx.com -library ip -ve
 # User Parameters
 set_property -dict [list \
   CONFIG.Data_Count_Width {16} \
-  CONFIG.Empty_Threshold_Assert_Value {4} \
-  CONFIG.Empty_Threshold_Negate_Value {5} \
+  CONFIG.Empty_Threshold_Assert_Value {2} \
+  CONFIG.Empty_Threshold_Negate_Value {3} \
   CONFIG.Enable_Safety_Circuit {false} \
   CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
   CONFIG.Full_Flags_Reset_Value {1} \
-  CONFIG.Full_Threshold_Assert_Value {65535} \
-  CONFIG.Full_Threshold_Negate_Value {65534} \
+  CONFIG.Full_Threshold_Assert_Value {65533} \
+  CONFIG.Full_Threshold_Negate_Value {65532} \
   CONFIG.Input_Data_Width {16} \
   CONFIG.Input_Depth {65536} \
   CONFIG.Output_Data_Width {32} \
   CONFIG.Output_Depth {32768} \
-  CONFIG.Performance_Options {First_Word_Fall_Through} \
+  CONFIG.Performance_Options {Standard_FIFO} \
   CONFIG.Read_Data_Count {true} \
-  CONFIG.Read_Data_Count_Width {16} \
+  CONFIG.Read_Data_Count_Width {15} \
   CONFIG.Reset_Type {Asynchronous_Reset} \
-  CONFIG.Use_Extra_Logic {true} \
-  CONFIG.Write_Data_Count_Width {17} \
+  CONFIG.Use_Extra_Logic {false} \
+  CONFIG.Write_Data_Count_Width {16} \
 ] [get_ips wvfm_fifo]
 
 # Runtime Parameters

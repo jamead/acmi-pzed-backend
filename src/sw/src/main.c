@@ -162,7 +162,7 @@ int main(void) {
 	//prog_si570();
 
 	//while (1) {
-	   write_lmk61e2();
+	   //write_lmk61e2();
 	   sleep(1);
 	//}
 

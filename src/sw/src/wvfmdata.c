@@ -15,14 +15,6 @@
 #include "pl_regs.h"
 
 
-void soft_trig_artix()
-{
-	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_DATA, 0x1);
-	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_ADDR, 0x0);
-	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x1);
-	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x0);
-
-}
 
 
 
@@ -33,7 +25,7 @@ static void wvfmdata_push(void *unused)
 {
     (void)unused;
 
-    u32 wvfm_debug = 0;
+    u32 wvfm_debug = 1;
     u32 wordcnt, pollcnt;
     u32 i;
     s32 rdbk;
@@ -50,34 +42,38 @@ static void wvfmdata_push(void *unused)
 
     while(1) {
 
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(100));
         //xil_printf("Triggering Artix...\r\n");
-        soft_trig_artix();
+        //soft_trig_artix();
 
 
         vTaskDelay(pdMS_TO_TICKS(50));
         pollcnt = 0;
         do {
         	wordcnt = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_CNT_REG);
-        	vTaskDelay(pdMS_TO_TICKS(1));
+        	vTaskDelay(pdMS_TO_TICKS(100));
            if (wvfm_debug) xil_printf("PollCnt: %d\r\n", pollcnt);
         	pollcnt++;
-        } while ((wordcnt == 0) && (pollcnt < 5000));
+        } while (wordcnt < 8000); // && (pollcnt < 5000));
 
         xil_printf("PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
 
         if (wordcnt > 8000) {
 
           // First 64 words are Pulse Statistics
+          if (wvfm_debug)  xil_printf("Pulse Stats...\r\n");
           for (i=0;i<64;i++) {
         	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
         	  if (wvfm_debug)  xil_printf("%d:  %x\r\n", i,rdbk);
         	  pulse_stats[i] = htonl(rdbk);
           }
 
+          if (wvfm_debug) xil_printf("EEPROM Settings...\r\n");
           // Words 64-127 are EEPROM settings
           for (i=0;i<64;i++) {
-        	  eeprom[i] = htonl(Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG));
+        	  rdbk = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_DATA_REG);
+        	  if (wvfm_debug)  xil_printf("%d:  %d\r\n", i,rdbk);
+        	  eeprom[i] = htonl(rdbk);
           }
 
           // Words 128-191 are Reserved

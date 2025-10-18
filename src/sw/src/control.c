@@ -159,6 +159,19 @@ void eeprom_settings(void *msg) {
 
 
 
+void soft_trig_artix()
+{
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_DATA, 0x1);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_ADDR, 0x0);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x1);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x0);
+
+}
+
+
+
+
+
 
 
 
@@ -191,6 +204,10 @@ void reg_settings(void *msg) {
           	break;
 
 
+        case SOFT_TRIG_MSG:
+        	xil_printf("Sending Soft Trigger...\r\n");
+        	soft_trig_artix();
+        	break;
 
         default:
           	xil_printf("Msg not supported yet...\r\n");
