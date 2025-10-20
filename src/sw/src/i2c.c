@@ -67,9 +67,23 @@ void init_i2c() {
     	//return XST_FAILURE;
     }
 
+
+    // Look up the configuration in the config table
+    ConfigPtr = XIicPs_LookupConfig(1);
+    if(ConfigPtr == NULL) {
+    	xil_printf("I2C Bus 1 Lookup failed!\r\n");
+    	//return XST_FAILURE;
+    }
+
+    Status = XIicPs_CfgInitialize(&IicPsInstance1, ConfigPtr, ConfigPtr->BaseAddress);
+     if(Status != XST_SUCCESS) {
+     	xil_printf("I2C Bus 1 initialization failed!\r\n");
+     	//return XST_FAILURE;
+     }
+
     //set i2c clock rate to 100KHz
     XIicPs_SetSClk(&IicPsInstance0, 100000);
-
+    XIicPs_SetSClk(&IicPsInstance1, 100000);
 }
 
 
@@ -91,6 +105,26 @@ s32 i2c0_read(u8 *buf, u8 len, u8 addr) {
     status = XIicPs_MasterRecvPolled(&IicPsInstance0, buf, len, addr);
     return status;
 }
+
+
+s32 i2c1_write(u8 *buf, u8 len, u8 addr) {
+
+	s32 status;
+
+	while (XIicPs_BusIsBusy(&IicPsInstance1));
+	status = XIicPs_MasterSendPolled(&IicPsInstance1, buf, len, addr);
+	return status;
+}
+
+s32 i2c1_read(u8 *buf, u8 len, u8 addr) {
+
+	s32 status;
+
+    while (XIicPs_BusIsBusy(&IicPsInstance1)) {};
+    status = XIicPs_MasterRecvPolled(&IicPsInstance1, buf, len, addr);
+    return status;
+}
+
 
 
 
@@ -147,6 +181,87 @@ void prog_si570() {
 
 
 
+// INA226 on AFE board
+
+#define INA226_ADDR          0x40  // A0=A1=0
+#define INA226_REG_CONFIG    0x00
+#define INA226_REG_SHUNTV    0x01
+#define INA226_REG_BUSV      0x02
+#define INA226_REG_POWER     0x03
+#define INA226_REG_CURRENT   0x04
+#define INA226_REG_CALIB     0x05
+
+// Scaling for Rshunt = 0.02 Ω
+#define INA226_CALIB_VALUE   0x0800                  // computed above
+#define INA226_VOLTAGE_LSB   0.00125f                // 1.25 mV/LSB
+#define INA226_CURRENT_LSB_A 0.000125f               // 125 µA/LSB
+#define INA226_POWER_LSB_W   (25.0f * INA226_CURRENT_LSB_A) // 3.125 mW/LSB
+
+
+
+
+// Write 16-bit word to INA226 register
+s32 ina226_write_reg(u8 reg, u16 value) {
+    u8 buf[3];
+    buf[0] = reg;
+    buf[1] = (u8)(value >> 8);   // MSB
+    buf[2] = (u8)(value & 0xFF); // LSB
+    return i2c1_write(buf, 3, INA226_ADDR);
+}
+
+
+// Read 16-bit word from INA226 register
+s32 ina226_read_reg(u8 reg, u16 *value) {
+    u8 buf[2];
+    s32 status;
+
+    // Write register pointer first
+    status = i2c1_write(&reg, 1, INA226_ADDR);
+    //xil_printf("status: %d\n",status);
+    if (status != 0) return status;
+
+    // Now read 2 bytes
+    status = i2c1_read(buf, 2, INA226_ADDR);
+    if (status != 0) return status;
+
+    *value = ((u16)buf[0] << 8) | buf[1];  // MSB first
+    return 0;
+}
+
+
+// Optional: configure averaging and conversion times (example: defaults)
+void ina226_init(void) {
+    // Program calibration (must be set before reading CURRENT/POWER)
+    ina226_write_reg(INA226_REG_CALIB, INA226_CALIB_VALUE);
+    // (Optional) Set CONFIG if you want specific averaging/ct:
+    // u16 cfg = 0x4127; // example: defaults; set as needed
+    // ina226_write_reg(INA226_REG_CONFIG, cfg);
+}
+
+// Returns bus voltage in volts
+float ina226_read_bus_voltage(void) {
+    u16 raw;
+    if (ina226_read_reg(INA226_REG_BUSV, &raw)) return -1.0f;
+    // Bus voltage LSB = 1.25 mV
+    float volts = (float)raw * INA226_VOLTAGE_LSB;
+    return volts;
+
+}
+
+// Returns current in amps (uses calibration above)
+float ina226_read_current(void) {
+    u16 raw;
+    if (ina226_read_reg(INA226_REG_CURRENT, &raw)) return -1.0f;
+    int16_t s = (int16_t)raw;  // signed
+    return (float)s * INA226_CURRENT_LSB_A;
+}
+
+// (Optional) Returns power in watts
+float ina226_read_power(void) {
+    u16 raw;
+    if (ina226_read_reg(INA226_REG_POWER, &raw)) return -1.0f;
+    return (float)raw * INA226_POWER_LSB_W;
+}
 
 
 

@@ -25,7 +25,8 @@ psc_key* the_server;
 
 
 XQspiPs QspiInstance;
-XIicPs IicPsInstance0;	    // si570
+XIicPs IicPsInstance0;	    // i2c bus on PS (lmk61e2 oscillator)
+XIicPs IicPsInstance1;	    // i2c bus on PL (ina226, temps)
 
 
 uint32_t git_hash;
@@ -150,7 +151,7 @@ void print_firmware_version()
 
 int main(void) {
 
-	u32 i, base;
+	u32 base;
 
     xil_printf("ACMI2.... \r\n");
     print_firmware_version();
@@ -165,6 +166,30 @@ int main(void) {
 	   //write_lmk61e2();
 	   sleep(1);
 	//}
+
+
+
+	    ina226_init();
+	    u16 reg_val;
+	    float val, v,i, p;
+
+	    while (1) {
+	    	ina226_read_reg(0x00,&reg_val);
+	    	printf("Config Reg: %x\n",reg_val);
+	    	ina226_read_reg(0x05,&reg_val);
+	    	printf("Calib Reg: %x\n",reg_val);
+	    	ina226_read_reg(0xFE,&reg_val);
+	    	printf("Manufacturer ID: %x\n",reg_val);
+	        v = ina226_read_bus_voltage();
+	        i = ina226_read_current();
+	        p = ina226_read_power();
+	        printf("INA226: V=%f   I=%f   P=%f\n",v,i,p);
+	    	sleep(1);
+
+	    }
+
+
+
 
 
 	//EVR reset

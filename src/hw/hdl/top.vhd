@@ -68,7 +68,7 @@ generic(
     
     -- Current, voltage and temperature i2c
     ivt_i2c_sda             : inout std_logic;
-    ivt_i2c_scl             : out std_logic;
+    ivt_i2c_scl             : inout std_logic;
    
     gen_bad_pwr_fault       : out std_logic;
     gen_no_clk_fault        : out std_logic;
@@ -85,35 +85,41 @@ end top;
 architecture behv of top is
 
   
-  signal pl_clk0         : std_logic;
-  signal pl_clk1         : std_logic;
-  signal pl_resetn       : std_logic_vector(0 downto 0);
-  signal pl_reset        : std_logic;
-  signal pl_temp         : std_logic_vector(11 downto 0);
+  signal pl_clk0          : std_logic;
+  signal pl_clk1          : std_logic;
+  signal pl_resetn        : std_logic_vector(0 downto 0);
+  signal pl_reset         : std_logic;
+  signal pl_temp          : std_logic_vector(11 downto 0);
   
-  signal gtx_refclk0     : std_logic;
+  signal gtx_refclk0      : std_logic;
  
-  signal ps_leds         : std_logic_vector(7 downto 0);
+  signal ps_leds          : std_logic_vector(7 downto 0);
   
-  signal m_axi4_m2s      : t_pl_regs_m2s;
-  signal m_axi4_s2m      : t_pl_regs_s2m;
+  signal m_axi4_m2s       : t_pl_regs_m2s;
+  signal m_axi4_s2m       : t_pl_regs_s2m;
   
-  signal reg_o_evr       : t_reg_o_evr;
-  signal reg_i_evr       : t_reg_i_evr;
-  signal evr_trigs       : t_evr_trigs;  
+  signal reg_o_evr        : t_reg_o_evr;
+  signal reg_i_evr        : t_reg_i_evr;
+  signal evr_trigs        : t_evr_trigs;  
    
-  signal reg_o_spi       : t_reg_o_spi;
+  signal reg_o_spi        : t_reg_o_spi;
   
-  signal reg_i_wvfm      : t_reg_i_wvfm;
-  signal reg_o_wvfm      : t_reg_o_wvfm;
+  signal reg_i_wvfm       : t_reg_i_wvfm;
+  signal reg_o_wvfm       : t_reg_o_wvfm;
   
-  signal waveform_data   : std_logic_vector(15 downto 0);
-  signal waveform_enb    : std_logic;
-  signal waveform_clk    : std_logic;
-  signal waveform_sel    : std_logic;  
+  signal waveform_data    : std_logic_vector(15 downto 0);
+  signal waveform_enb     : std_logic;
+  signal waveform_clk     : std_logic;
+  signal waveform_sel     : std_logic;  
 
-  signal ps_fpled_stretch: std_logic;
-
+  signal ps_fpled_stretch : std_logic;
+  
+  signal i2c1_scl_i       : std_logic;
+  signal i2c1_scl_t       : std_logic;
+  signal i2c1_scl_o       : std_logic;
+  signal i2c1_sda_i       : std_logic;
+  signal i2c1_sda_t       : std_logic;
+  signal i2c1_sda_o       : std_logic; 
 
   --attribute mark_debug     : string;
   --attribute mark_debug of reg_o: signal is "true";
@@ -141,15 +147,7 @@ gen_bad_pwr_fault <= 'Z'; --'0' when gen_bad_pwr_fault_i = '1' else 'Z';
 pl_reset <= not pl_resetn(0);
 
 
--- lvds input buffers 
-waveform_enb_lvds      : IBUFDS  port map (O => waveform_enb, IB => waveform_enb_n, I => waveform_enb_p);
-waveform_sel_lvds      : IBUFDS  port map (O => waveform_sel, IB => waveform_sel_n, I => waveform_sel_p);
-waveform_clk_lvds      : IBUFDS  port map (O => waveform_clk, IB => waveform_clk_n, I => waveform_clk_p);
-waveform_lvds : for i in 0 to 15 generate
- begin
-    data_inst : IBUFDS port map (O => waveform_data(i), IB => waveform_data_n(i), I => waveform_data_p(i));
-end generate;
- 
+
 
 
 
@@ -177,14 +175,14 @@ fe_spi: entity work.artix_spi
   );    
 
 
-ivt_i2c : entity work.qafe_monitors
-  port map(
-	clock => pl_clk0,  
-	reset => pl_reset, 
-	scl => ivt_i2c_scl, 
-	sda => ivt_i2c_sda,
-	registers => open --ivt_regs  
-);    
+--ivt_i2c : entity work.qafe_monitors
+--  port map(
+--	clock => pl_clk0,  
+--	reset => pl_reset, 
+--	scl => ivt_i2c_scl, 
+--	sda => ivt_i2c_sda,
+--	registers => open --ivt_regs  
+--);    
  
 
 
@@ -249,6 +247,12 @@ sys: system
     fixed_io_ps_clk => fixed_io_ps_clk,
     fixed_io_ps_porb => fixed_io_ps_porb,
     fixed_io_ps_srstb => fixed_io_ps_srstb, 
+    i2c1_scl_i => i2c1_scl_i, 
+    i2c1_scl_o => i2c1_scl_o, 
+    i2c1_scl_t => i2c1_scl_t, 
+    i2c1_sda_i => i2c1_sda_i, 
+    i2c1_sda_o => i2c1_sda_o, 
+    i2c1_sda_t => i2c1_sda_t,
     pl_clk0 => pl_clk0,
     pl_resetn => pl_resetn,  
     pl_temp => pl_temp,
@@ -311,6 +315,21 @@ pscmsg_led : entity work.stretch
 	sig_out => ps_fpled_stretch
 );	  	
 
+
+
+
+i2c1_scl_buf : IOBUF port map (O=>i2c1_scl_i, IO=>ivt_i2c_scl, I=>i2c1_scl_o, T=>i2c1_scl_t);
+i2c1_sda_buf : IOBUF port map (O=>i2c1_sda_i, IO=>ivt_i2c_sda, I=>i2c1_sda_o, T=>i2c1_sda_t);    
+
+-- lvds input buffers 
+waveform_enb_lvds      : IBUFDS  port map (O => waveform_enb, IB => waveform_enb_n, I => waveform_enb_p);
+waveform_sel_lvds      : IBUFDS  port map (O => waveform_sel, IB => waveform_sel_n, I => waveform_sel_p);
+waveform_clk_lvds      : IBUFDS  port map (O => waveform_clk, IB => waveform_clk_n, I => waveform_clk_p);
+waveform_lvds : for i in 0 to 15 generate
+ begin
+    data_inst : IBUFDS port map (O => waveform_data(i), IB => waveform_data_n(i), I => waveform_data_p(i));
+end generate;
+ 
 
 
 end behv;
