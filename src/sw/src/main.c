@@ -163,12 +163,12 @@ int main(void) {
 	//prog_si570();
 
 	//while (1) {
-	   //write_lmk61e2();
-	   sleep(1);
+	write_lmk61e2();
+	sleep(1);
 	//}
 
 
-
+    /*
 	    ina226_init();
 	    u16 reg_val;
 	    float val, v,i, p;
@@ -187,7 +187,7 @@ int main(void) {
 	    	sleep(1);
 
 	    }
-
+     */
 
 
 
