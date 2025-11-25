@@ -14,13 +14,12 @@
 
 #define FP_LEDS_REG 0x40
 
-#define EVR_TS_NS_REG 0x50
-#define EVR_TS_S_REG 0x54
-#define EVR_TS_NS_LAT_REG 0x58
-#define EVR_TS_S_LAT_REG 0x5C
+#define EVR_TS_S_REG 0x50
+#define EVR_TS_NS_REG 0x54
+#define EVR_TS_S_LAT_REG 0x58
+#define EVR_TS_NS_LAT_REG 0x5C
 #define EVR_FE_TRIGNUM_REG 0x60
 #define EVR_FE_TRIGDLY_REG 0x64
-#define EVENT_SRC_SEL_REG 0x68
 
 #define FIFO_STREAMENB_REG 0x100
 #define FIFO_RST_REG 0x104

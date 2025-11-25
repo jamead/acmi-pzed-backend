@@ -70,6 +70,11 @@ reg_i.lat_ts_ns.val.data <= reg_i_evr.ts_ns_lat;
 reg_i.lat_ts_s.val.data <= reg_i_evr.ts_s_lat; 
 
 reg_o_evr.reset <= reg_o.evr_reset.data.data(0);
+reg_o_evr.inj_eventno <= reg_o.fe_trig_eventno.val.data;
+reg_o_evr.inj_eventdly <= reg_o.fe_trig_delay.val.data;
+
+
+
 
 
 fe_trigsrc <= reg_o.event_src_sel.val.data(0);

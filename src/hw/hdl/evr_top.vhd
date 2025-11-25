@@ -65,8 +65,6 @@ architecture behv of evr_top is
    signal tbt_trig_i        : std_logic;
    signal tbt_trig_stretch  : std_logic;
    signal tbt_cnt           : std_logic_vector(2 downto 0);
-   signal inj_trig          : std_logic;
-   signal inj_trig_sync     : std_logic_vector(1 downto 0);
    signal onehz_trig        : std_logic;
    signal onehz_trig_sync   : std_logic_vector(2 downto 0);   
    signal onehz_rate_cnt    : std_logic_vector(31 downto 0);
@@ -83,9 +81,7 @@ architecture behv of evr_top is
    attribute mark_debug of onehz_trig_sync: signal is "true";   
    
    attribute mark_debug of onehz_rate_cnt: signal is "true";
-   attribute mark_debug of evr_trigs: signal is "true";
 
-   
 --   attribute mark_debug of inj_trig: signal is "true";
 --   attribute mark_debug of inj_trig_sync: signal is "true";
    
@@ -96,6 +92,9 @@ architecture behv of evr_top is
    attribute mark_debug of rxdata: signal is "true";
    attribute mark_debug of rxcharisk: signal is "true";
 --   --attribute mark_debug of gtx_reset: signal is "true";
+
+   attribute mark_debug of reg_o: signal is "true";
+   attribute mark_debug of reg_i: signal is "true";
    
 --   attribute mark_debug of rxresetdone: signal is "true"; 
 --   attribute mark_debug of tx_fsm_reset_done: signal is "true"; 
@@ -146,9 +145,9 @@ rxoutclk_bufg0_i : BUFG   port map ( I => rxout_clk, O => rxusr_clk);
 process(sys_clk)
   begin
     if rising_edge(sys_clk) then
-        inj_trig_sync(0) <= inj_trig;
-        inj_trig_sync(1) <= inj_trig_sync(0); 
-        evr_trigs.inj_trig <= inj_trig_sync(1);
+       -- inj_trig_sync(0) <= inj_trig;
+       -- inj_trig_sync(1) <= inj_trig_sync(0); 
+       -- evr_trigs.inj_trig <= inj_trig_sync(1);
         onehz_trig_sync(0) <= onehz_trig;
         onehz_trig_sync(1) <= onehz_trig_sync(0); 
         onehz_trig_sync(2) <= onehz_trig_sync(1);
@@ -242,10 +241,10 @@ event_inj : entity work.event_rcv_chan
        reset => sys_rst,
        eventstream => eventstream,
        myevent => reg_o.inj_eventno,
-       mydelay => 32d"1",  --evr_params.trigdly, 
+       mydelay => reg_o.inj_eventdly, --32d"1",  --evr_params.trigdly, 
        mywidth => 32d"12",   -- //creates a pulse about 100ns long
        mypolarity => ('0'),
-       trigger => inj_trig --evr_trigs.inj_trig
+       trigger => evr_trigs.inj_trig
 );
 
 

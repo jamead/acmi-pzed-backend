@@ -54,9 +54,12 @@ generic(
     waveform_enb_p          : in std_logic;
     waveform_enb_n          : in std_logic;    
 
+    -- artix trigger  (was artix_spi_din)       
+    artix_trig              : out std_logic;
+    
     -- artix spi
     artix_spi_sclk          : out std_logic;                    
-    artix_spi_din           : in std_logic; 
+    --artix_spi_din           : in std_logic; 
     artix_spi_dout          : out std_logic; 
     artix_spi_cs            : out std_logic;  
     
@@ -134,7 +137,7 @@ dbg(1) <= artix_spi_cs;
 dbg(2) <= artix_spi_sclk; 
 dbg(3) <= artix_spi_dout; 
 dbg(4) <= gtx_refclk0; 
-dbg(5) <= '0'; --evr_rcvd_clk; 
+dbg(5) <= evr_trigs.inj_trig; -- '0'; --evr_rcvd_clk; 
 dbg(8 downto 6) <= ps_leds(2 downto 0); 
 
 leds <= ps_leds(3 downto 0); 
@@ -146,7 +149,7 @@ gen_bad_pwr_fault <= 'Z'; --'0' when gen_bad_pwr_fault_i = '1' else 'Z';
 
 pl_reset <= not pl_resetn(0);
 
-
+artix_trig <= evr_trigs.inj_trig;
 
 
 
@@ -169,7 +172,7 @@ fe_spi: entity work.artix_spi
     reset => pl_reset, 
     reg_o => reg_o_spi,                     
     sclk => artix_spi_sclk,                    
-    din => artix_spi_din, 
+    din => '0', --artix_spi_din, 
     dout => artix_spi_dout, 
     cs => artix_spi_cs                 
   );    

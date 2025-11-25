@@ -46,6 +46,7 @@ end record t_reg_i_evr;
 type t_reg_o_evr is record
    reset          : std_logic;
    inj_eventno    : std_logic_vector(7 downto 0);
+   inj_eventdly   : std_logic_vector(31 downto 0);
    onehz_eventno  : std_logic_vector(7 downto 0);
 end record;
 

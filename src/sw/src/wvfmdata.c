@@ -25,7 +25,7 @@ static void wvfmdata_push(void *unused)
 {
     (void)unused;
 
-    u32 wvfm_debug = 1;
+    u32 wvfm_debug = 0;
     u32 wordcnt, pollcnt;
     u32 i;
     s32 rdbk;
@@ -35,6 +35,7 @@ static void wvfmdata_push(void *unused)
     static s32 eeprom[64];
     static s16 boow_adc[128];
     static s16 wvfm_adc[16000];
+    static u32 timestamp[2];
 
 
 
@@ -42,21 +43,21 @@ static void wvfmdata_push(void *unused)
 
     while(1) {
 
-        vTaskDelay(pdMS_TO_TICKS(100));
+        //vTaskDelay(pdMS_TO_TICKS(100));
         //xil_printf("Triggering Artix...\r\n");
         //soft_trig_artix();
 
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(100));
         pollcnt = 0;
         do {
         	wordcnt = Xil_In32(XPAR_M_AXI_BASEADDR + FIFO_CNT_REG);
         	vTaskDelay(pdMS_TO_TICKS(100));
-           if (wvfm_debug) xil_printf("PollCnt: %d\r\n", pollcnt);
+           if (wvfm_debug) xil_printf("PollCnt: %d    Num FIFO Words: %d\r\n", pollcnt, wordcnt);
         	pollcnt++;
         } while (wordcnt < 8000); // && (pollcnt < 5000));
 
-        xil_printf("PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
+        xil_printf("Got Trig!   PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
 
         if (wordcnt > 8000) {
 
@@ -97,6 +98,10 @@ static void wvfmdata_push(void *unused)
         	  wvfm_adc[i+1] = htons((s16) (rdbk & 0xFFFF));
           }
 
+          timestamp[0] = htonl(Xil_In32(XPAR_M_AXI_BASEADDR + EVR_TS_NS_LAT_REG));
+          timestamp[1] = htonl(Xil_In32(XPAR_M_AXI_BASEADDR + EVR_TS_S_LAT_REG));
+          //xil_printf("Timestamp ns: %d\r\n",timestamp[0]);
+          //xil_printf("Timestamp s : %d\r\n",timestamp[1]);
 
           /*
           for (i=0;i<16258;i++) {
@@ -111,6 +116,9 @@ static void wvfmdata_push(void *unused)
 
           }
           */
+
+
+
 
         }
 
@@ -132,6 +140,7 @@ static void wvfmdata_push(void *unused)
         psc_send(the_server, 52, sizeof(eeprom), eeprom);
         psc_send(the_server, 53, sizeof(boow_adc), boow_adc);
         psc_send(the_server, 54, sizeof(wvfm_adc), wvfm_adc);
+        psc_send(the_server, 55, sizeof(timestamp), timestamp);
 
 
     }

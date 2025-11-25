@@ -82,6 +82,11 @@ set_property DRIVE 12 [get_ports gen_no_clk_fault]
 set_property SLEW FAST [get_ports gen_no_clk_fault]
 
 
+#picozed to artix EVR INJ trigger
+set_property PACKAGE_PIN R17 [get_ports artix_trig]
+set_property IOSTANDARD LVCMOS33 [get_ports artix_trig]
+set_property DRIVE 12 [get_ports artix_trig]
+set_property SLEW FAST [get_ports artix_trig]
 
 
 #picozed to artix spi
@@ -90,8 +95,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports artix_spi_dout]
 set_property DRIVE 12 [get_ports artix_spi_dout]
 set_property SLEW FAST [get_ports artix_spi_dout]
 
-set_property PACKAGE_PIN R17 [get_ports artix_spi_din]
-set_property IOSTANDARD LVCMOS33 [get_ports artix_spi_din]
 
 set_property PACKAGE_PIN V13 [get_ports artix_spi_sclk]
 set_property IOSTANDARD LVCMOS33 [get_ports artix_spi_sclk]
@@ -194,6 +197,7 @@ set_property IOSTANDARD LVDS [get_ports waveform_sel_n]
 set_property PACKAGE_PIN L5 [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_n]
+
 
 
 

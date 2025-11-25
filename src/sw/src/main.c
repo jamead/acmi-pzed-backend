@@ -151,7 +151,8 @@ void print_firmware_version()
 
 int main(void) {
 
-	u32 base;
+	u32 i, base;
+    u32 ts_s, ts_ns;
 
     xil_printf("ACMI2.... \r\n");
     print_firmware_version();
@@ -190,13 +191,30 @@ int main(void) {
      */
 
 
+	//EVR set trigger number
+    xil_printf("Set Event Number...\r\n");
+	Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_FE_TRIGNUM_REG, 32);
 
+	//EVR set trigger delay
+    xil_printf("Set Event Delay...\r\n");
+	Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_FE_TRIGDLY_REG, 1000);
 
 	//EVR reset
     xil_printf("Resetting EVR GTX...\r\n");
-	Xil_Out32(XPAR_M_AXI_BASEADDR + 0x30, 0xFF);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_RST_REG, 1);
 	usleep(100);
-	Xil_Out32(XPAR_M_AXI_BASEADDR + 0x30, 0);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + EVR_RST_REG, 0);
+    usleep(100);
+
+	//read Timestamp
+    for (i=0;i<5;i++) {
+	  ts_s = Xil_In32(XPAR_M_AXI_BASEADDR + EVR_TS_S_REG);
+	  ts_ns = Xil_In32(XPAR_M_AXI_BASEADDR + EVR_TS_NS_REG);
+	  xil_printf("ts= %d    %d\r\n",ts_s,ts_ns);
+	  sleep(1);
+    }
+
+
 
 
     sys_thread_new("main", realmain, NULL, THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);

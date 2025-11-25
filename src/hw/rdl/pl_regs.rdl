@@ -164,12 +164,7 @@ reg {
     field {} val[32];
   } fe_trig_delay @0x64;  
 
- reg {
-    desc="Internal clock mode (tbt,fa,sa trig source) (0=int counters, 1=evr)";
-    default sw = rw;
-    default hw = r;
-    field {} val[1];
-  } event_src_sel @0x68;  
+ 
  
  
  
