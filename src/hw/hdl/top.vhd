@@ -123,21 +123,25 @@ architecture behv of top is
   signal i2c1_sda_i       : std_logic;
   signal i2c1_sda_t       : std_logic;
   signal i2c1_sda_o       : std_logic; 
-
-  --attribute mark_debug     : string;
-  --attribute mark_debug of reg_o: signal is "true";
+  signal latch_reset      : std_logic;
+  signal acis_force_trip  : std_logic; 
+  signal acis_keylock     : std_logic; 
+   
+--  attribute mark_debug     : string;
+--  attribute mark_debug of latch_reset: signal is "true";
+  
 
  
 
 begin
 
 
-dbg(0) <= pl_clk0;
-dbg(1) <= artix_spi_cs; 
-dbg(2) <= artix_spi_sclk; 
+dbg(0) <= latch_reset;
+dbg(1) <= acis_force_trip; 
+dbg(2) <= acis_keylock; 
 dbg(3) <= artix_spi_dout; 
 dbg(4) <= gtx_refclk0; 
-dbg(5) <= evr_trigs.inj_trig; -- '0'; --evr_rcvd_clk; 
+dbg(5) <= '0'; -- '0'; --evr_rcvd_clk; 
 dbg(8 downto 6) <= ps_leds(2 downto 0); 
 
 leds <= ps_leds(3 downto 0); 
@@ -219,7 +223,10 @@ ps_pl: entity work.ps_io
     reg_o_wvfm => reg_o_wvfm, 
 	reg_i_wvfm => reg_i_wvfm,
 	reg_o_evr => reg_o_evr, 
-	reg_i_evr => reg_i_evr
+	reg_i_evr => reg_i_evr,
+	latch_reset => latch_reset,
+	acis_force_trip => acis_force_trip,
+	acis_keylock => acis_keylock
           
   );
 

@@ -30,8 +30,11 @@ entity ps_io is
 
 	 reg_o_evr         : out t_reg_o_evr;
 	 reg_i_evr         : in  t_reg_i_evr;
+	 
+	 latch_reset       : out std_logic; 
+	 acis_force_trip   : out std_logic; 
+	 acis_keylock      : out std_logic; 
  
-     fe_trigsrc        : out std_logic;
      fp_leds           : out std_logic_vector(7 downto 0)
   );
 end ps_io;
@@ -45,8 +48,9 @@ architecture behv of ps_io is
   signal reg_i        : t_addrmap_pl_regs_in;
   signal reg_o        : t_addrmap_pl_regs_out;
 
-  --attribute mark_debug     : string;
-  --attribute mark_debug of reg_o: signal is "true";
+  attribute mark_debug     : string;
+  attribute mark_debug of reg_o: signal is "true";
+  attribute mark_debug of latch_reset: signal is "true";
 
 
 
@@ -73,11 +77,12 @@ reg_o_evr.reset <= reg_o.evr_reset.data.data(0);
 reg_o_evr.inj_eventno <= reg_o.fe_trig_eventno.val.data;
 reg_o_evr.inj_eventdly <= reg_o.fe_trig_delay.val.data;
 
+latch_reset <= reg_o.latch_reset.data.data(0);
+acis_force_trip <= reg_o.acis_force_trip.data.data(0); 
+acis_keylock    <= reg_o.acis_keylock.data.data(0); 
+--latch_reset <= '1'; 
 
 
-
-
-fe_trigsrc <= reg_o.event_src_sel.val.data(0);
 
 
 

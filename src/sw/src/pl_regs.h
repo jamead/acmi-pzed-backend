@@ -13,6 +13,9 @@
 #define EVR_RST_REG 0x30
 
 #define FP_LEDS_REG 0x40
+#define LATCH_RESET 0x120
+#define ACIS_FORCE_TRIP 0x124
+#define ACIS_KEYLOCK 0x128
 
 #define EVR_TS_S_REG 0x50
 #define EVR_TS_NS_REG 0x54

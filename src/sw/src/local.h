@@ -53,6 +53,7 @@ void eeprom_settngs(void *);
 float ReadAccumSA(u32, u32);
 void write_ramptable(u32, void *, u32);
 void ReadHardwareFlavor(void);
+void resetFaults(void);
 
 void  ina226_init(void);
 s32   ina226_read_reg(u8, u16 *);

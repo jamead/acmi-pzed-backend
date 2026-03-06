@@ -12,6 +12,7 @@
 #include "xil_printf.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "xparameters.h"
 
 /* Hardware support includes */
 #include "control.h"
@@ -169,9 +170,32 @@ void soft_trig_artix()
 }
 
 
+void latch_reset_trig(u32 msgVal)
+{
+	if(msgVal==1){
+		xil_printf("Latch Reset....\r\n");
+		Xil_Out32(XPAR_M_AXI_BASEADDR + LATCH_RESET,0);
+		sleep(1);
+		Xil_Out32(XPAR_M_AXI_BASEADDR + LATCH_RESET,1);
+	}
 
+}
 
+void Acis_ForceTrip(u32 msgVal){
+	if(msgVal==1){
+			xil_printf("Latch Reset....\r\n");
+			Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,0);
+			sleep(1);
+			Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,1);
+		}
+}
 
+void Acis_Keylock(u32 msgVal){
+	if(msgVal==1){
+				xil_printf("Latch Reset....\r\n");
+				Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_KEYLOCK,msgVal);
+	}
+}
 
 
 
@@ -222,8 +246,20 @@ void reg_settings(void *msg) {
          	break;
 
 
+        case LATCH_RESET_MSG:
+        	xil_printf("Sending Latch Reset from PV...\r\n");
+        	latch_reset_trig(data.u);
+        	break;
 
+        case ACIS_FORCE_TRIP_MSG:
+                	xil_printf("Sending Force Trip from PV...\r\n");
+                	Acis_ForceTrip(data.u);
+                	break;
 
+        case ACIS_KEYLOCK_MSG:
+                	xil_printf("Sending Keylock from PV...\r\n");
+                	Acis_Keylock(data.u);
+                	break;
         default:
           	xil_printf("REG Msg invalid...  REG:  Addr: %d    Data: %d\r\n",addr,data.u);
            	break;

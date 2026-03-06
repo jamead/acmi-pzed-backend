@@ -9,6 +9,8 @@
 #include <sleep.h>
 #include "xiicps.h"
 #include "xuartps_hw.h"
+#include "xparameters.h"
+
 
 
 #include "lwip/sockets.h"
@@ -30,7 +32,7 @@ typedef struct {
   u8 ipgw[4];
 } ip_t;
 
-
+static uint8_t keylock_val = 1;
 
 
 typedef struct {
@@ -257,7 +259,26 @@ static void printTaskStats(void)
     }
 }
 
+void resetFaults(void){
+	xil_printf("Latch Reset....\r\n");
+	Xil_Out32(XPAR_M_AXI_BASEADDR + LATCH_RESET,0);
+	sleep(1);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + LATCH_RESET,1);
+}
 
+void AcisForceTrip(void){
+	xil_printf("ACIS Force Trip....\r\n");
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,0);
+	sleep(1);
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,1);
+}
+
+void AcisKeylock(void){
+	xil_printf("ACIS Keylock....\r\n");
+	keylock_val ^= 1;
+	Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_KEYLOCK,keylock_val);
+	usleep(1000);
+}
 
 
 
@@ -270,7 +291,10 @@ void console_menu()
 
     static const menu_entry_t menu[] = {
 
-	    {'A', "Print FreeRTOS Stats",  printTaskStats}
+	    {'A', "Print FreeRTOS Stats",  printTaskStats},
+		{'B', "Reset Fault Latch", resetFaults},
+		{'C', "ACIS Force Trip", AcisForceTrip},
+		{'D', "ACIS Keylock", AcisKeylock}
 
 	};
 	static const size_t menulen = sizeof(menu)/sizeof(menu_entry_t);

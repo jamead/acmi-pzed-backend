@@ -76,7 +76,6 @@ addrmap pl_regs {
   } PRJ_TIMESTAMP @0x1C;
 
  
- 
 reg {
     desc="Artix SPI data";
     default sw = rw;
@@ -118,6 +117,26 @@ reg {
     field {} val[8];
   } FP_LEDS @0x40;
 
+reg {
+    desc="Latch Reset";
+    default sw = rw;
+    default hw = r;
+    field {} data[1] = 1;
+  } latch_reset @0x120;
+  
+reg {
+    desc="ACIS Force Trip";
+    default sw = rw;
+    default hw = r;
+    field {} data[1] = 1;
+  } acis_force_trip @0x124;
+
+reg {
+    desc="ACIS Keylock";
+    default sw = rw;
+    default hw = r;
+    field {} data[1] = 1;
+  } acis_keylock @0x128;
 
 
 
