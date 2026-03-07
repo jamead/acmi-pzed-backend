@@ -26,13 +26,13 @@ set_property SLEW FAST [get_ports {leds[3]}]
 
 set_property PACKAGE_PIN AA14 [get_ports {dbg[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dbg[0]}]
-set_property DRIVE 12 [get_ports {dbg[0]}]
-set_property SLEW FAST [get_ports {dbg[0]}]
+#set_property DRIVE 12 [get_ports {dbg[0]}]
+#set_property SLEW FAST [get_ports {dbg[0]}]
 
 set_property PACKAGE_PIN AA15 [get_ports {dbg[1]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dbg[1]}]
-set_property DRIVE 12 [get_ports {dbg[1]}]
-set_property SLEW FAST [get_ports {dbg[1]}]
+#set_property DRIVE 12 [get_ports {dbg[1]}]
+#set_property SLEW FAST [get_ports {dbg[1]}]
 
 set_property PACKAGE_PIN Y14 [get_ports {dbg[2]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {dbg[2]}]

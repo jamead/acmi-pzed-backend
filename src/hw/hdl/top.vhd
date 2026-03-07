@@ -77,7 +77,8 @@ generic(
     gen_no_clk_fault        : out std_logic;
 
     leds                    : out std_logic_vector(3 downto 0);
-    dbg                     : out std_logic_vector(8 downto 0)
+    dbg_in                  : in std_logic_vector(1 downto 0);
+    dbg                     : out std_logic_vector(8 downto 2)
 
 
   );
@@ -135,14 +136,17 @@ architecture behv of top is
 
 begin
 
+-- modify pins to match the ACIS interface
+--dbg(0) and dbg(1) are inputs
+dbg(2) <= latch_reset;
+dbg(3) <= acis_force_trip; 
+dbg(4) <= acis_keylock; 
+dbg(5) <= artix_spi_dout; 
+dbg(6) <= '0'; 
+dbg(7) <= '0'; -- '0'; --evr_rcvd_clk; 
+dbg(8) <= gtx_refclk0;
 
-dbg(0) <= latch_reset;
-dbg(1) <= acis_force_trip; 
-dbg(2) <= acis_keylock; 
-dbg(3) <= artix_spi_dout; 
-dbg(4) <= gtx_refclk0; 
-dbg(5) <= '0'; -- '0'; --evr_rcvd_clk; 
-dbg(8 downto 6) <= ps_leds(2 downto 0); 
+
 
 leds <= ps_leds(3 downto 0); 
 

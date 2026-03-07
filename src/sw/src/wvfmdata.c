@@ -57,7 +57,7 @@ static void wvfmdata_push(void *unused)
         	pollcnt++;
         } while (wordcnt < 8000); // && (pollcnt < 5000));
 
-        xil_printf("Got Trig!   PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
+        //xil_printf("Got Trig!   PollCnt: %d     Num FIFO Words: %d\r\n", pollcnt, wordcnt);
 
         if (wordcnt > 8000) {
 
@@ -136,10 +136,11 @@ static void wvfmdata_push(void *unused)
 
 
 
-        psc_send(the_server, 51, sizeof(pulse_stats), pulse_stats);
+
         psc_send(the_server, 52, sizeof(eeprom), eeprom);
         psc_send(the_server, 53, sizeof(boow_adc), boow_adc);
         psc_send(the_server, 54, sizeof(wvfm_adc), wvfm_adc);
+        psc_send(the_server, 51, sizeof(pulse_stats), pulse_stats);
         psc_send(the_server, 55, sizeof(timestamp), timestamp);
 
 
