@@ -128,8 +128,11 @@ architecture behv of top is
   signal acis_force_trip  : std_logic; 
   signal acis_keylock     : std_logic; 
    
---  attribute mark_debug     : string;
---  attribute mark_debug of latch_reset: signal is "true";
+  attribute mark_debug     : string;
+  attribute mark_debug of artix_trig: signal is "true";
+  attribute mark_debug of waveform_data: signal is "true";
+  attribute mark_debug of waveform_enb: signal is "true"; 
+  attribute mark_debug of waveform_sel: signal is "true";
   
 
  
@@ -157,8 +160,9 @@ gen_bad_pwr_fault <= 'Z'; --'0' when gen_bad_pwr_fault_i = '1' else 'Z';
 
 pl_reset <= not pl_resetn(0);
 
-artix_trig <= evr_trigs.inj_trig;
 
+--artix_trig <= evr_trigs.inj_trig;
+artix_trig <= evr_trigs.soft_trig;
 
 
 

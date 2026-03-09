@@ -32,14 +32,41 @@
 #define EEPROM_OPCODE_READ 3
 #define EEPROM_OPCODE_WRITE 2
 
-
+#define ADC_TABLE 0x60
 
 void set_fpleds(u32 msgVal)  {
 	Xil_Out32(XPAR_M_AXI_BASEADDR + FP_LEDS_REG, msgVal);
 }
 
 
+void write_adc_table(void *msg, u32 msglen)
+{
 
+	u32 spi_addr, spi_data;
+	u32 *msgptr = (u32 *)msg;
+	u32 i,table_len;
+
+	table_len = msglen / 4;
+    xil_printf("Writing ADC Table: %d words\r\n",msglen);
+	if (table_len > 16000) {
+		xil_printf("Max Table is 16,000 samples\r\n");
+		return;
+	}
+
+	//for (i=0;i<table_len;i++) {
+    for (i=0;i<100;i++) {
+      spi_data = htonl(*msgptr++);
+      spi_addr = i<<16 | ADC_TABLE;
+      xil_printf("ADC Table: spi_addr=%8x  spi_data=%8x\r\n",spi_addr, spi_data);
+	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_DATA, spi_data);
+	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_ADDR, spi_addr);
+	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x1);
+	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x0);
+	  vTaskDelay(pdMS_TO_TICKS(1));
+	}
+
+
+}
 
 
 
@@ -183,17 +210,17 @@ void latch_reset_trig(u32 msgVal)
 
 void Acis_ForceTrip(u32 msgVal){
 	if(msgVal==1){
-			xil_printf("Latch Reset....\r\n");
-			Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,0);
-			sleep(1);
-			Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,1);
-		}
+		xil_printf("Latch Reset....\r\n");
+		Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,0);
+		sleep(1);
+		Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_FORCE_TRIP,1);
+	}
 }
 
 void Acis_Keylock(u32 msgVal){
 	if(msgVal==1){
-				xil_printf("Latch Reset....\r\n");
-				Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_KEYLOCK,msgVal);
+		xil_printf("Latch Reset....\r\n");
+		Xil_Out32(XPAR_M_AXI_BASEADDR + ACIS_KEYLOCK,msgVal);
 	}
 }
 
@@ -252,14 +279,15 @@ void reg_settings(void *msg) {
         	break;
 
         case ACIS_FORCE_TRIP_MSG:
-                	xil_printf("Sending Force Trip from PV...\r\n");
-                	Acis_ForceTrip(data.u);
-                	break;
+            xil_printf("Sending Force Trip from PV...\r\n");
+            Acis_ForceTrip(data.u);
+            break;
 
         case ACIS_KEYLOCK_MSG:
-                	xil_printf("Sending Keylock from PV...\r\n");
-                	Acis_Keylock(data.u);
-                	break;
+            xil_printf("Sending Keylock from PV...\r\n");
+            Acis_Keylock(data.u);
+            break;
+
         default:
           	xil_printf("REG Msg invalid...  REG:  Addr: %d    Data: %d\r\n",addr,data.u);
            	break;

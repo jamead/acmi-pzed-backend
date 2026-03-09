@@ -61,6 +61,7 @@ type t_evr_trigs is record
    onehz_trig_stretch : std_logic;
    inj_trig           : std_logic;
    inj_trig_stretch   : std_logic;  
+   soft_trig          : std_logic;
 
 end record;  
 

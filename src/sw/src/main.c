@@ -69,6 +69,8 @@ static void client_msg(void *pvt, psc_client *ckey, uint16_t msgid, uint32_t msg
         	break;
         case 2: //eeprom settings
         	eeprom_settings(msg);
+        case 3: //tail cancellation table
+        	write_adc_table(msg,msglen);
         case 5: //ping event
             break;
     }

@@ -70,6 +70,8 @@ architecture behv of evr_top is
    signal onehz_rate_cnt    : std_logic_vector(31 downto 0);
    signal wvfm_enb_s        : std_logic_vector(2 downto 0);
    
+   signal soft_trig         : std_logic;
+   
 
 
    --debug signals (connect to ila)
@@ -108,6 +110,7 @@ begin
 
 evr_trigs.rcvd_clk <= rxusr_clk;
 evr_trigs.tbt_trig <= tbt_trig_stretch;
+evr_trigs.soft_trig <= soft_trig;
 
 
 process(rxusr_clk)
@@ -248,6 +251,12 @@ event_inj : entity work.event_rcv_chan
 );
 
 
+soft: entity work.gen_soft_trig
+    port map (
+        clk => sys_clk, 
+        reset => sys_rst,
+        trig_1hz => soft_trig
+    );
 
 
 --stretch the sa_trig signal so can be seen on LED

@@ -25,7 +25,7 @@ static void wvfmdata_push(void *unused)
 {
     (void)unused;
 
-    u32 wvfm_debug = 0;
+    u32 wvfm_debug = 1;
     u32 wordcnt, pollcnt;
     u32 i;
     s32 rdbk;

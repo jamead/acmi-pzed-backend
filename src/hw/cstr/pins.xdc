@@ -24,13 +24,13 @@ set_property SLEW FAST [get_ports {leds[3]}]
 
 
 
-set_property PACKAGE_PIN AA14 [get_ports {dbg[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {dbg[0]}]
+set_property PACKAGE_PIN AA14 [get_ports {dbg_in[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {dbg_in[0]}]
 #set_property DRIVE 12 [get_ports {dbg[0]}]
 #set_property SLEW FAST [get_ports {dbg[0]}]
 
-set_property PACKAGE_PIN AA15 [get_ports {dbg[1]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {dbg[1]}]
+set_property PACKAGE_PIN AA15 [get_ports {dbg_in[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {dbg_in[1]}]
 #set_property DRIVE 12 [get_ports {dbg[1]}]
 #set_property SLEW FAST [get_ports {dbg[1]}]
 
@@ -197,6 +197,7 @@ set_property IOSTANDARD LVDS [get_ports waveform_sel_n]
 set_property PACKAGE_PIN L5 [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_p]
 set_property IOSTANDARD LVDS [get_ports waveform_clk_n]
+
 
 
 
