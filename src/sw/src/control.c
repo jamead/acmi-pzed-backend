@@ -47,23 +47,25 @@ void write_adc_table(void *msg, u32 msglen)
 	u32 i,table_len;
 
 	table_len = msglen / 4;
-    xil_printf("Writing ADC Table: %d words\r\n",msglen);
+    xil_printf("Writing ADC Table: %d words\r\n",table_len);
 	if (table_len > 16000) {
 		xil_printf("Max Table is 16,000 samples\r\n");
 		return;
 	}
 
 	//for (i=0;i<table_len;i++) {
-    for (i=0;i<100;i++) {
+    for (i=0;i<table_len;i++) {
       spi_data = htonl(*msgptr++);
       spi_addr = i<<16 | ADC_TABLE;
-      xil_printf("ADC Table: spi_addr=%8x  spi_data=%8x\r\n",spi_addr, spi_data);
+      //xil_printf("ADC Table: spi_addr=%8x  spi_data=%d\r\n",spi_addr, spi_data);
 	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_DATA, spi_data);
 	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_ADDR, spi_addr);
 	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x1);
 	  Xil_Out32(XPAR_M_AXI_BASEADDR + ARTIX_SPI_WE, 0x0);
-	  vTaskDelay(pdMS_TO_TICKS(1));
+	  usleep(50);
+	  //vTaskDelay(pdMS_TO_TICKS(5));
 	}
+    xil_printf("Finished writing ADC Table...\r\n");
 
 
 }
